@@ -1,0 +1,6 @@
+Counter_4bits, primera versión, inputs rst en, output q
+https://www.edaplayground.com/x/r8Ac
+
+Segunda versión:
+Con pin de carga
+https://www.edaplayground.com/x/X_qC
