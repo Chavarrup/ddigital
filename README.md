@@ -1,7 +1,4 @@
-# ddigital
- trabajo de grado, diseño digital
-```python
+# ddigital  
+Trabajo de grado - Diseño Digital  
+Lina María Chavarro Meza - Abril 2025
 
-print(Hola mundo)
-
-```
