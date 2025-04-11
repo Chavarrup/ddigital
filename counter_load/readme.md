@@ -1,44 +1,57 @@
-# Diseño Digital  
-Trabajo de grado - Diseño Digital  
-Lina María Chavarro Meza - Abril 2025
+# counter_4bit_with_load
+
+## Descripción General
+Este módulo implementa un contador binario de 4 bits con funcionalidad adicional de carga paralela mediante la señal `load` y la entrada `d`.  
+Es una extensión del contador clásico sin carga, que se observa en la sección anterior.
 
 ---
 
-## Módulo: `counter_4bit`
+## Entradas
 
-Implementa un contador binario de 4 bits con habilitación (`en`) y reinicio asíncrono (`rst`).
+- **`clk`** (1 bit): Señal de reloj. El contador se actualiza en el flanco positivo.
+- **`rst`** (1 bit): Reset asíncrono. Si está activo (`1`), reinicia el contador. Máxima prioridad.
+- **`en`** (1 bit): Habilita el conteo cuando `load` está inactivo.
+- **`load`** (1 bit): Si está activo (`1`), se carga el valor de `d` en `q`.
+- **`d`** (4 bits): Valor de entrada a cargar en `q` cuando `load = 1`.
 
-### Señales
+---
 
-- **Entradas:**
-  - `clk` : Señal de reloj.
-  - `rst` : Reset asíncrono (prioridad máxima).
-  - `en`  : Habilita el conteo.
+## Salida
 
-- **Salida:**
-  - `q[3:0]` : Salida del contador.
+- **`q`** (4 bits): Valor actual del contador o valor cargado desde `d`.
 
-### Comportamiento
+---
 
-- `rst = 1` → Reinicia el contador a 0.
-- `rst = 0` y `en = 1` → Incrementa `q` en cada flanco de subida de `clk`.
-- `en = 0` → Mantiene el valor de `q`.
+## Comportamiento
 
-### Código Verilog
+- Si `rst = 1`: el contador se reinicia a `0000` (asíncrono).
+- Si `load = 1` y `rst = 0`: se carga el valor de `d` en `q`.
+- Si `load = 0` y `en = 1`: se incrementa el valor de `q`.
+- Si `load = 0` y `en = 0`: el valor de `q` se mantiene constante.
+
+---
+
+## Código Fuente
 
 ```verilog
-module counter_4bit (
-  input clk,              
-  input rst,              
-  input en,               
-  output reg [3:0] q      
+module counter_4bit_with_load (
+  input clk,              // Señal de reloj
+  input rst,              // Reset asíncrono
+  input en,               // Habilitación del contador
+  input load,             // Carga paralela
+  input [3:0] d,          // Valor paralelo a cargar si load=1
+  output reg [3:0] q      // Salida del contador
 );
 
+// Proceso secuencial: flanco de subida del clk o reset
   always @(posedge clk or posedge rst) begin
     if (rst)
-      q <= 4'b0000;
+      q <= 4'b0000;              // Reinicia contador
+    else if (load)
+      q <= d;                    // Carga valor de d en q
     else if (en)
-      q <= q + 1;
+      q <= q + 1;                // Incrementa si está habilitado
+    // Si load = 0 y en = 0, mantiene valor
   end
 
 endmodule
