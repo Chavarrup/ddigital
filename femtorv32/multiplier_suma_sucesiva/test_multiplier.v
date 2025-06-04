@@ -2,7 +2,7 @@
 
 module test_multiplier;
 
- // Señales de entrada
+  // Señales de entrada
   reg clk = 0;           // Reloj inicializado en 0
   reg rst = 0;           // Reset inicializado en 0
   reg wstrb = 0;         // Write strobe para habilitar escritura
@@ -10,7 +10,7 @@ module test_multiplier;
   reg [1:0] sel;         // Selector de registro
   reg [31:0] wdata;      // Dato para escritura
 
- // Señales de salida
+  // Señales de salida
   wire [31:0] rdata;     // Dato leído
   wire wbusy, rbusy;     // Indicadores de busy para escritura y lectura
   wire [7:0] LED;        // LEDs que muestran parte del resultado
@@ -50,7 +50,7 @@ module test_multiplier;
     sel = 2'b01; wdata = 5; #10;
 
     // Iniciar multiplicación escribiendo 1 en registro start (sel=10)
-    // Start
+    // Start multiplicación con A = 7 y B = 5
     sel = 2'b10; wdata = 1; #10;
     wstrb = 0;   // Deshabilitar escritura
 
@@ -60,8 +60,8 @@ module test_multiplier;
     // Leer resultado
     rstrb = 1;  // Habilitar lectura
     sel = 2'b11; #10;
-    $display("[TB] Resultado leído: %d", rdata);
-    $display("[TB] LEDs = %b", LED);
+    $display("[TB] Resultado leído: %d", rdata);  // Mostrar el resultado
+    $display("[TB] LEDs = %b", LED);               // Mostrar los LEDs que contienen parte del resultado
     rstrb = 0;  // Deshabilitar lectura
 
     #20;

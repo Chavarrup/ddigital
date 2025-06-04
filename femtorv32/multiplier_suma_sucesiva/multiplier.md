@@ -1,86 +1,106 @@
-# Multiplier.v — Multiplicador por suma sucesiva (FemtoRV32)
 
-Este módulo implementa un multiplicador de 32 bits mediante suma repetitiva
+# `multiplier.v` — Multiplicador por desplazamiento y suma condicional (FemtoRV32)
+
+Este módulo implementa un multiplicador secuencial de 32 bits usando el método clásico de **doble y suma**, mediante **desplazamientos binarios** y acumulación condicional. Es un diseño liviano, ideal para sistemas como FemtoRV32.
+
+---
 
 ## Características
 
-- Multiplicación A × B usando sumas sucesivas.
-- Interfaz compatible con el sistema FemtoRV32 como periférico mapeado a memoria.
-- Indicador visual del resultado en los primeros 8 bits vía LEDs.
-- Interfaz simple: 4 registros accesibles desde el procesador.
+- Multiplicación A × B usando lógica binaria (shift-and-add).
+- Funciona en 32 ciclos como máximo.
+- Interfaz de 4 registros accesibles vía memoria mapeada.
+- Indicación visual del resultado parcial con LEDs.
+- Bajo uso de recursos: no requiere multiplicadores dedicados.
 
-## Registros
+---
+
+## Registros mapeados
 
 | Offset (bytes) | Nombre    | Descripción               |
 |----------------|-----------|---------------------------|
-| 0              | A         | Operando A                |
-| 4              | B         | Operando B                |
-| 8              | START     | Inicia la operación       |
-| 12             | RESULT    | Resultado final           |
+| `0`            | A         | Operando A                |
+| `4`            | B         | Operando B                |
+| `8`            | START     | Inicia la operación       |
+| `12`           | RESULT    | Resultado final           |
+
+---
 
 ## Señales
 
 ### Entradas
-- `clk`, `rst`: reloj y reset.
+- `clk`: reloj del sistema.
+- `rst`: reset asíncrono.
 - `wstrb`: escritura activa.
 - `rstrb`: lectura activa.
-- `sel [1:0]`: selección de registro.
-- `wdata [31:0]`: datos de entrada.
+- `sel[1:0]`: selección de registro.
+- `wdata[31:0]`: datos de entrada.
 
 ### Salidas
-- `rdata [31:0]`: datos de salida.
-- `wbusy`: indica si está procesando.
-- `LED [7:0]`: valor del resultado reflejado en LEDs.
-
-## Interfaz
-
-| Señal   | Tipo    | Descripción                                   |
-|---------|---------|-----------------------------------------------|
-| clk     | input   | Reloj del sistema                              |
-| rst     | input   | Reset asincrónico, activo en alto              |
-| wstrb   | input   | Strobe de escritura                            |
-| rstrb   | input   | Strobe de lectura                              |
-| sel     | input   | Selector del registro (2 bits, 4 registros)   |
-| wdata   | input   | Datos de escritura (32 bits)                   |
-| rdata   | output  | Datos de lectura (32 bits)                      |
-| wbusy   | output  | Indica si está ocupado realizando multiplicación |
-| rbusy   | output  | No usado (siempre 0) dejado para mantener compatibilidad.                           |
-| LED     | output  | 8 LEDs con los 8 bits menos significativos del resultado |
+- `rdata[31:0]`: datos de salida según el registro leído.
+- `wbusy`: indica si la multiplicación está en curso.
+- `rbusy`: no implementado (siempre 0, reservado).
+- `LED[7:0]`: bits menos significativos del resultado.
 
 ---
 
-## Modo de operación
+## Funcionamiento paso a paso
 
-1. Se escriben los operandos A y B.
-2. Se activa el bit `START`.
-3. El módulo comienza a sumar A, B veces.
-4. El resultado es accesible en `RESULT` y reflejado en los LEDs.
-5. El bit `START` se pone automáticamente en 0 al finalizar.
+1. **Carga de operandos:**  
+   - Se escriben los valores A y B en sus respectivos registros.
 
-## Funcionamiento básico
+2. **Inicio de la operación:**  
+   - Escribir en el registro `START` inicia la multiplicación, si no está ocupado (`busy = 0`).
 
-1. **Escritura de operandos:**  
-   - Se escriben los valores A y B en sus registros respectivos (offset 0 y 4).
-   
-2. **Inicio de multiplicación:**  
-   - Al escribir en el registro `START` (offset 8) con `wstrb = 1` y `sel = 2'b10`, el multiplicador comienza la operación si no está ocupado.
-   - El resultado y el contador se reinician, se activa la señal `start` y el módulo se pone en estado `busy`.
+3. **Multiplicación iterativa por desplazamiento y suma condicional:**  
+   - Si el bit menos significativo (`B[0]`) es `1`, se suma `A` al acumulador `result`.
+   - Luego:
+     - `A` se multiplica por 2 (`A << 1`).
+     - `B` se divide por 2 (`B >> 1`).
+   - El proceso se repite 32 veces como máximo.
 
-3. **Proceso de multiplicación por suma sucesiva:**  
-   - En cada ciclo de reloj, si `busy` está activo y el contador es menor que B, se suma A al acumulador `result` y se incrementa el contador.
-   - Cuando el contador alcanza B, la multiplicación termina (`busy` se pone a 0 y `start` a 0).
+4. **Finalización:**  
+   - Cuando se han procesado todos los bits de `B`, `busy` se desactiva y el resultado queda disponible.
 
-4. **Lectura de resultados:**  
-   - Con `rstrb = 1` y el selector `sel` indicando el registro, el módulo devuelve el valor solicitado: A, B, busy o result.
-   
-5. **Indicador LED:**  
-   - Los primeros 8 bits del resultado se muestran en un registro `LED` para visualizar el valor en hardware.
+5. **Lectura del resultado:**  
+   - Se puede leer el resultado parcial o final accediendo al registro `RESULT`.
+
+6. **Visualización con LEDs:**  
+   - Se reflejan los 8 bits menos significativos del resultado en la salida `LED`.
 
 ---
 
-# Código Fuente
+## Método de multiplicación usado: Shift and Add
 
-### Módulo: `multiplier.v`
+Este módulo implementa una multiplicación binaria tradicional por desplazamiento y suma, basada en los siguientes principios:
+
+- En binario, multiplicar `A × B` puede verse como sumar `A × 2ⁿ` para cada bit `B[n]` que sea 1.
+- Por cada ciclo de reloj:
+  - Se evalúa el bit menos significativo de `B`.
+  - Si ese bit es `1`, se suma `A` al resultado acumulado.
+  - Luego, `A` se multiplica por 2 (`A << 1`), y `B` se divide por 2 (`B >> 1`).
+
+---
+
+## Ejemplo de operación
+
+Supongamos:
+
+```
+A = 3 (binario: 0000...0011)
+B = 5 (binario: 0000...0101)
+```
+
+B tiene bits en 1 en las posiciones 0 y 2. Entonces:
+
+- Ciclo 1: `B[0] = 1` → sumar A (3) → resultado = 3
+- Ciclo 2: `B[0] = 0` → no se suma
+- Ciclo 3: `B[0] = 1` → sumar A × 4 = 12 → resultado final = 3 + 12 = **15**
+
+---
+
+## 🧾 Código fuente
+
 ```verilog
 `timescale 1ns / 1ps
 
@@ -107,7 +127,6 @@ module multiplier (
   assign wbusy = busy;
   assign rbusy = 0;
 
-  // Escritura de registros
   always @(posedge clk or posedge rst) begin
     if (rst) begin
       A <= 0; B <= 0; result <= 0; counter <= 0; start <= 0; busy <= 0;
@@ -126,8 +145,10 @@ module multiplier (
       end
 
       if (busy) begin
-        if (counter < B) begin
-          result <= result + A;
+        if (counter < 32) begin
+          if (B[0]) result <= result + A;
+          A <= A << 1;
+          B <= B >> 1;
           counter <= counter + 1;
         end else begin
           busy <= 0;
@@ -137,7 +158,6 @@ module multiplier (
     end
   end
 
-  // Lectura
   always @(*) begin
     if (rstrb) begin
       case (sel)
@@ -153,6 +173,9 @@ module multiplier (
   end
 
   always @(posedge clk)
-    LED <= result[7:0];  // Mostrar solo 8 bits del resultado en los LEDs
+    LED <= result[7:0];
 
 endmodule
+```
+
+---
