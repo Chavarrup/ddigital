@@ -136,6 +136,9 @@ module femtosoc(
 
    wire [19:0] ram_word_address = mem_address[21:2];
 
+   // Declaramos mem_address_is_vram siempre (no usamos FGA)
+   wire mem_address_is_vram = 1'b0;
+
 // Using the 128 KBytes of SPRAM (single-ported RAM) embedded in the Ice40 UP5K   
 `ifdef ICE40UP5K_SPRAM
 
@@ -317,11 +320,13 @@ end
    // For now, we got no device that has
    // blocking reads (SPI flash blocks on
    // write address and waits for read data).
-   assign io_rbusy = 0 ; 
+   // io_rbusy = OR de 0 y mult_rbusy (si está habilitado)
+   assign io_rbusy =
+       1'b0
 `ifdef NRV_IO_MULTIPLIER
-    | mult_rbusy
+   | mult_rbusy
 `endif
-;
+   ;
 
    assign io_wbusy = 0
 `ifdef NRV_IO_SSD1351_1331

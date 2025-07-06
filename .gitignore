@@ -1,0 +1,15 @@
+# Vivado intermediate files
+*.jou
+*.log
+*.str
+*.webtalk
+.Xil
+.data/
+.ip_user_files/
+.cache/
+.runs/
+# Vivado build artifacts
+VivadoProject/RTL_Project.cache/
+VivadoProject/RTL_Project.runs/
+VivadoProject/RTL_Project.sim/
+VivadoProject/xsim/
