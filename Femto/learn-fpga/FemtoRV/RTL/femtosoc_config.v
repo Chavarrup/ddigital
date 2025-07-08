@@ -8,53 +8,10 @@
 `define NRV_OPTIMIZE "-Os"     // Nivel de optimización, por ejemplo O2
 `define NRV_ABI "ilp32"       // ABI, como ilp32 o lp64
 
-
-// Comentamos las definiciones específicas de placas, ya que no las estamos usando
-//`ifdef ULX3S
-//`include "CONFIGS/ulx3s_config.v"
-//`endif
-
-//`ifdef ICE_STICK
-//`include "CONFIGS/icestick_config.v"
-//`endif
-
-//`ifdef ICE_BREAKER
-//`include "CONFIGS/icebreaker_config.v"
-//`endif
-
-//`ifdef ECP5_EVN
-//`include "CONFIGS/ecp5evn_config.v"
-//`endif
-
-//`ifdef ARTY
-//`include "CONFIGS/arty_config.v"
-//`endif
-
-//`ifdef ICE_SUGAR_NANO
-//`include "CONFIGS/icesugarnano_config.v"
-//`endif
-
-//`ifdef CMODA7
-//`include "CONFIGS/cmod_a7_config.v"
-//`endif
-
 // Usamos la configuración genérica si no se define ninguna de las anteriores
 `ifndef NRV_CONFIGURED
 `include "CONFIGS/generic_config.v"
 `endif
-
-/******************************************************************************/
-// Configuración para el reset
-
-// Deshabilitamos la configuración de reset para placas específicas
-// Si no tienes un botón de reset activo, no defines NRV_NEGATIVE_RESET
-//`ifdef ICE_STICK
-//`define NRV_NEGATIVE_RESET 
-//`endif
-
-//`ifdef FOMU
-//`define NRV_NEGATIVE_RESET
-//`endif
 
 // Definimos los módulos que vamos a usar. Aquí indicamos los módulos que pueden ser necesarios
 `ifdef NRV_IO_SPI_FLASH
@@ -74,7 +31,6 @@
 `define NRV_NEGATIVE_RESET
 `endif
 
-/******************************************************************************************************************/
 // Definición de procesadores
 
 `define NRV_IS_IO_ADDR(addr) |addr[23:22] // Asserted if address is in IO space (then it needs additional wait states)

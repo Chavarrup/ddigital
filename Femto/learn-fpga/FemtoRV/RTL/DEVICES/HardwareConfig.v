@@ -5,11 +5,11 @@
 //   hardware config.
 
 module HardwareConfig(
-    input wire 	       clk, 
-    input wire 	       sel_memory,  // available RAM
-    input wire 	       sel_devices, // configured devices 
-    input wire         sel_cpuinfo, // CPU information 	      
-    output wire [31:0] rdata        // read data
+    input  wire 	       clk, 
+    input  wire 	       sel_memory,  // available RAM
+    input  wire 	       sel_devices, // configured devices 
+    input  wire          sel_cpuinfo, // CPU information 	      
+    output wire [31:0]   rdata        // read data
 );
 
 `include "HardwareConfig_bits.v"   
@@ -19,7 +19,6 @@ module HardwareConfig(
 `else
    localparam counter_width = 32;
 `endif   
-
    
 // configured devices
 localparam NRV_DEVICES = 0
@@ -49,7 +48,14 @@ localparam NRV_DEVICES = 0
 `endif 
 `ifdef NRV_IO_FGA
    | (1 << IO_FGA_CNTL_bit) | (1 << IO_FGA_DAT_bit)
-`endif			 
+`endif		
+`ifdef NRV_IO_MULTIPLIER
+   // registros A, B, resultado bajo y alto
+   | (1 << IO_MULT_A_bit)
+   | (1 << IO_MULT_B_bit)
+   | (1 << IO_MULT_RESULT_bit)
+   | (1 << IO_MULT_RESULT_HI_bit)
+`endif 
 ;
    
    assign rdata = sel_memory  ? `NRV_RAM  :

@@ -11,7 +11,6 @@
 `include "PLL/femtopll.v"           // The PLL (generates clock at NRV_FREQ)
 `include "DEVICES/HardwareConfig.v" // Constant registers to query hardware config.
 `include "DEVICES/multiplier.v"   
-`include "PROCESSOR/femtorv32_quark.v"  // Asegúrate de que este archivo esté correctamente incluido
 
 `ifndef NRV_RESET_ADDR
  `define NRV_RESET_ADDR 0
@@ -226,7 +225,6 @@ module femtosoc(
  *   the corresponding signals are in capital letters. 
  */   
 
-
 /*********************** Hardware configuration ************/
 /*
  * Three memory-mapped constant registers that make it easy for
@@ -248,23 +246,23 @@ HardwareConfig hwconfig(
 `endif
    
 `ifdef NRV_IO_MULTIPLIER
-  // Internal connections to the multiplier peripheral
-  wire [63:0] mult_rdata;  // Result of multiplication (64 bits)
-  wire        mult_rbusy;  // Signal indicating if the multiplier is busy
+  // Conexiones internas al periférico multiplicador
+  wire [63:0] mult_rdata;  // Resultado de la multiplicación (64 bits)
+  wire        mult_rbusy;  // Señal que indica si el multiplicador está ocupado
 
   // Instantiate multiplier module
   multiplier multiplier_inst (
-      .clk(clk),            // System clock
-      .rst(reset),          // Synchronized reset signal
+      .clk(clk),            // Reloj del sistema
+      .rst(reset),          // Señal de reinicio sincronizada
       .wstrb(io_wstrb),     // Write strobe signal
       .rstrb(io_rstrb),     // Read strobe signal
       .sel(io_word_address[IO_MULT_A_bit] | io_word_address[IO_MULT_B_bit] | io_word_address[IO_MULT_RESULT_bit]), // Register selection
-      .wdata(io_wdata),     // Input data (32 bits)
+      .wdata(io_wdata),     // Datos de entrada (32 bits)
       .rdata(mult_rdata),   // Result (64 bits)
       .rbusy(mult_rbusy)    // Busy signal
   );
 
-  // Assign output signals for the multiplier
+   // Asignar señales de salida al multiplicador
   assign A = io_word_address[IO_MULT_A_bit] ? io_wdata : 32'b0; // Assign A
   assign B = io_word_address[IO_MULT_B_bit] ? io_wdata : 32'b0; // Assign B
   assign wstrb  = io_wstrb;  // Assign write strobe
@@ -317,10 +315,6 @@ always @(posedge clk) begin
 	    ;
 end
 
-   // For now, we got no device that has
-   // blocking reads (SPI flash blocks on
-   // write address and waits for read data).
-   // io_rbusy = OR de 0 y mult_rbusy (si está habilitado)
    assign io_rbusy =
        1'b0
 `ifdef NRV_IO_MULTIPLIER
