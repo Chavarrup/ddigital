@@ -38,3 +38,40 @@ module hadder8bit (
   assign {cout, O} = A + B;
 
 endmodule
+---
+
+## Detalles del Testbench
+
+El archivo `testbench.v` es un banco de pruebas utilizado para simular el comportamiento del sumador `hadder8bit`.
+
+### ¿Qué hace este testbench?
+
+- **Inicializa las entradas** `A` y `B` en cero.
+- **Genera estímulos periódicos**:
+  - `A` incrementa en **50** cada **10 ns**.
+  - `B` incrementa en **37** cada **20 ns**.
+- **Registra las señales** en un archivo `.vcd` para su visualización en **GTKWave**.
+- **Finaliza la simulación automáticamente** después de **80 ns**.
+
+### Comportamiento esperado
+
+A medida que los valores de `A` y `B` se incrementan, se pueden observar:
+
+- El resultado de la suma en `O`.
+- El estado de `cout` cuando la suma excede 255 (desbordamiento de 8 bits).
+
+---
+
+## Utilidad del módulo
+
+Este sumador es esencial en:
+
+- **Unidades aritméticas y lógicas (ALU)** de microprocesadores.
+- **Cálculo de direcciones de memoria** o **desplazamientos**.
+- **Acumuladores y registros de suma**.
+- **Controladores digitales** que requieren operaciones básicas de suma.
+
+La salida `cout` permite detectar condiciones de **desbordamiento**, lo cual es útil para:
+
+- Operaciones multibit (por ejemplo, suma de 16 o 32 bits en etapas).
+- Sistemas que requieren control de errores o verificación de saturación.

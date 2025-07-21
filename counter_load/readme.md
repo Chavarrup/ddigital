@@ -55,3 +55,44 @@ module counter_4bit_with_load (
   end
 
 endmodule
+```
+
+## Detalles del Testbench
+
+El archivo `testbench.v` simula diferentes escenarios para validar el comportamiento completo del módulo `counter_4bit_with_load`.
+
+### ¿Qué hace este testbench?
+
+- Inicializa todas las señales (`clk`, `rst`, `en`, `load`, `d`).
+- Aplica un **reset asíncrono** al inicio.
+- Activa el conteo (`en = 1`) y observa el incremento de `q`.
+- Usa la señal `load` para cargar valores específicos (`5` y `12`).
+- Pausa el contador (`en = 0`) para verificar que `q` se mantiene constante.
+- Guarda el comportamiento en un archivo `.vcd` para visualización con **GTKWave**.
+- Incluye mensajes `$display` para seguimiento en consola.
+
+### Comportamiento esperado
+
+| Tiempo | rst | en | load | d     | Acción                             | q esperada |
+|--------|-----|----|------|-------|------------------------------------|------------|
+| 0 ns   | 1   | 0  | 0    | 0000  | Reset                              | 0000       |
+| 10 ns  | 0   | 1  | 0    | xxxx  | Comienza conteo                    | 0001 → ... |
+| 30 ns  | 0   | 0  | 1    | 0101  | Carga valor 5                      | 0101       |
+| 40 ns  | 0   | 1  | 0    | xxxx  | Sigue contando desde 5             | 0110 → ... |
+| 80 ns  | 0   | 0  | 0    | xxxx  | Pausa el contador                  | constante  |
+| 90 ns  | 0   | 0  | 1    | 1100  | Carga valor 12                     | 1100       |
+| 100 ns | 0   | 1  | 0    | xxxx  | Conteo desde 12                    | 1101 → ... |
+
+---
+
+## Utilidad del Módulo
+
+El módulo `counter_4bit_with_load` es versátil y adecuado para múltiples aplicaciones:
+
+- **Contadores programables** en sistemas digitales.
+- **Temporizadores ajustables** por software o señales externas.
+- **Módulos de control** donde es necesario iniciar desde un estado definido.
+- **Sistemas embebidos** con reinicio externo o arranque desde valores predeterminados.
+- **Diseños secuenciales**, como controladores de estado finito (FSM), que requieren control preciso del conteo.
+
+Este tipo de módulo combina eficiencia con flexibilidad, permitiendo tanto operación automática como control manual del valor interno del contador.

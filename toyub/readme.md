@@ -95,4 +95,69 @@ module toyup (input wire rst, input wire clk,
         .step(STEP), .CW(CW));    
 
 endmodule
+```
 
+## Testbench
+
+El archivo `toyup_tb.v` es el banco de pruebas diseñado para validar el comportamiento funcional del microprocesador `toyup`. Su propósito es simular una serie de ciclos de reloj y reset, permitiendo observar cómo responde el sistema ante ciertas condiciones predefinidas.
+
+## Módulo `toyup.v`
+
+A continuación se representa la **topología principal** del microprocesador de juguete. Aquí se integran todos los módulos funcionales para conformar el datapath y control del sistema. El objetivo es ilustrar el funcionamiento interno de un microprocesador simple, usando una arquitectura modular y jerárquica.
+
+### Entradas y salidas del módulo
+
+| Señal     | Tamaño | Dirección | Descripción |
+|-----------|--------|-----------|-------------|
+| `clk`     | 1 bit  | Entrada   | Señal de reloj del sistema. Todos los módulos se sincronizan con su flanco positivo. |
+| `rst`     | 1 bit  | Entrada   | Reset general activo en alto, reinicia registros y contadores. |
+| `IPORT`   | 8 bits | Entrada   | Puerto de entrada de datos externo. |
+| `OPORT`   | 8 bits | Salida    | Puerto de salida hacia el exterior. Representa la salida final del procesador. |
+
+---
+
+### Propósito del diseño
+
+Este módulo combina los elementos fundamentales de un microprocesador:
+
+- **Datapath**: A, B, PC, IR, I/O, RAM, BUS.
+- **Control**: Unidad de Control basada en FSM que genera la palabra de control (`CW`).
+- **Ciclo de instrucción dividido en pasos**: cada instrucción se ejecuta en varias fases controladas por el contador de pasos (`IC`).
+
+---
+
+### Componentes instanciados
+
+| Componente      | Descripción                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| `countup8bitld`  | Contador del programa (PC). Incrementa o carga una dirección desde el bus. |
+| `countup3bitclr` | Contador de pasos del ciclo de instrucción (IC). Reiniciable y habilitable. |
+| `accreg8bit`     | Registro acumulador A. Tiene entrada y salida bidireccional por el bus.     |
+| `buffdreg8bit`   | Registros B, I y O. B es auxiliar, I es entrada y O es salida.              |
+| `dreg8bit`       | Registro de Instrucción (IR). Almacena la instrucción actual.              |
+| `RAM8x64`        | Memoria combinada para instrucciones y datos. Direccionada por `PC`.       |
+| `ControlUnit`    | Unidad de control FSM. Genera la palabra de control de 13 bits.            |
+
+---
+
+### Señales internas clave
+
+| Señal       | Tamaño | Descripción |
+|-------------|--------|-------------|
+| `bus`       | 8 bits | Bus de datos compartido por todos los módulos. |
+| `add`       | 8 bits | Dirección generada por `PC` para acceder a la memoria. |
+| `CW`        | 13 bits| Palabra de control que determina qué módulos están activos en cada paso. |
+| `INSTRUCTION` | 8 bits | Instrucción leída de la RAM y almacenada en el IR. |
+| `STEP`      | 3 bits | Paso actual del ciclo de instrucción. |
+
+---
+
+### Descripción del flujo
+
+1. El `PC` genera una dirección.
+2. `RAM8x64` entrega una instrucción que es capturada por `IR`.
+3. La `ControlUnit` interpreta la instrucción y activa ciertos bits de la palabra de control (`CW`).
+4. Dependiendo del paso (`STEP`) y la instrucción, se habilitan registros, se transfieren datos por el bus, y se modifica el estado del sistema.
+5. El `IC` avanza el paso en cada flanco de reloj, generando así un ciclo de ejecución paso a paso.
+
+---

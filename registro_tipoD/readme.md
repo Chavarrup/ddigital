@@ -56,3 +56,38 @@ always @(posedge clk) begin
 end
 
 endmodule
+```
+
+## Testbench
+
+El archivo `tb_registro_D_4bits.v` es un **banco de pruebas** diseñado para validar el comportamiento del módulo `registro_D_4bits`. Su función es simular diferentes combinaciones de señales de entrada (`clk`, `EN`, `D`) y observar la salida `Q` para comprobar si el módulo se comporta como se espera.
+
+### ¿Qué hace este testbench?
+
+1. **Genera la señal de reloj (`clk`)**:  
+   Se utiliza un `always` que cambia `clk` cada 5 ns, generando un reloj con periodo de 10 ns.
+
+2. **Inicializa señales**:  
+   Al comienzo de la simulación, `clk`, `EN` y `D` se inicializan en 0.
+
+3. **Ejecuta pruebas específicas**:  
+   Se aplican distintas combinaciones de `EN` y `D` para comprobar si el módulo captura o mantiene datos correctamente en función del estado de `EN`.
+
+4. **Registra señales para análisis en GTKWave**:  
+   Mediante `$dumpfile` y `$dumpvars` se genera un archivo `.vcd` que permite observar el comportamiento del módulo visualmente.
+
+5. **Monitorea por consola**:  
+   Con `$monitor`, se imprime el valor de `EN`, `D` y `Q` en cada instante relevante de la simulación.
+
+---
+
+## Utilidad del módulo
+
+Este tipo de registro es útil en diversos sistemas digitales para:
+
+- **Almacenamiento temporal de datos**
+- **Etapas intermedias en datapaths**
+- **Sistemas secuenciales**
+- **Buffers controlados por habilitación**
+
+Su simplicidad lo convierte en una unidad fundamental en el diseño de procesadores, controladores, periféricos y más.

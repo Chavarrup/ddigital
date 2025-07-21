@@ -50,3 +50,39 @@ module contador_controlado (
     end
 
 endmodule
+```
+
+##  Detalles del Testbench
+
+El archivo `testbench.v` es un banco de pruebas que **verifica todos los estados funcionales del contador**, incluyendo:
+
+- Reinicio (`rst = 1`)
+- Conteo con habilitación (`en = 1`)
+- Pausa del conteo (`en = 0`)
+- Reanudación posterior
+- Reinicio y posterior reanudación
+
+Además, se genera un archivo de simulación `.vcd` que puede abrirse en **GTKWave** para visualizar el comportamiento temporal del contador.
+
+### ¿Qué hace este testbench?
+
+1. Inicializa el contador en estado de reset (`rst = 1`).
+2. Activa `en` para habilitar el conteo.
+3. Pausa el conteo momentáneamente (`en = 0`).
+4. Reinicia el contador nuevamente (`rst = 1`).
+5. Reanuda el conteo desde cero.
+6. Finaliza la simulación tras varias iteraciones.
+
+---
+
+## Utilidad del Módulo
+
+Este contador puede ser aplicado en diversos contextos digitales:
+
+-  **Temporizadores digitales**
+-  **Divisores de frecuencia**
+-  **Máquinas de estados (FSM)**
+-  **Sistemas de control embebido**
+-  **Sistemas de conteo de eventos o pulsos**
+
+Es un **componente fundamental** en múltiples diseños secuenciales y sistemas digitales de propósito general.

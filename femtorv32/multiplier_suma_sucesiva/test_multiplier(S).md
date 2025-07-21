@@ -45,7 +45,7 @@ Este programa en lenguaje ensamblador RISC-V utiliza el periférico multiplicado
 
 ---
 
-## multiplier_test.S
+## test_multiplier.S
 ```asm
 .include "femtorv32.inc"
 

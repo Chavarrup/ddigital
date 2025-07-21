@@ -21,9 +21,7 @@ El diseño está modularizado en tres partes:
 |---------|--------|---------------------------------------------|
 | `clk`   | 1 bit  | Señal de reloj (flanco positivo)            |
 | `en`    | 1 bit  | Habilita la escritura en el acumulador      |
-| `ldacc` | 1 bit  | Selector de operación:                      |
-|         |        | - `1`: carga directa                        |
-|         |        | - `0`: suma con el valor anterior (`Q + D`) |
+| `ldacc` | 1 bit  | Selector de operación:    - `1`: carga directa  - `0`: suma con el valor anterior (`Q + D`) |
 | `D`     | 8 bits | Dato de entrada                             |
 
 ---
@@ -45,7 +43,7 @@ El diseño está modularizado en tres partes:
 
 - Si `en = 0`, el contenido del acumulador no cambia.
 ---
-## 🧾 Resumen de Estados
+## Resumen de Estados
 
 | Tiempo | `clk` | `en` | `ldacc` | `D`   | `Q`   | Acción                      |
 |--------|-------|------|---------|-------|-------|-----------------------------|

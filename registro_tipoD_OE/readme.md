@@ -48,3 +48,24 @@ module registro_D_4bits_OE (
     assign Q = (OE) ? Q_internal : 4'bz;
 
 endmodule
+```
+
+---
+
+##Testbench
+
+El archivo `Testbench.v` es un banco de pruebas diseñado para validar el funcionamiento del módulo `registro_D_4bits_OE`. Simula distintas combinaciones de señales para verificar:
+
+- La carga correcta de datos en `Q_internal` cuando `EN` está activo.
+- La habilitación/desconexión de la salida `Q` según el estado de `OE`.
+- El estado de alta impedancia (`Z`) cuando `OE = 0`.
+
+### ¿Qué hace este testbench?
+
+1. **Genera un reloj de 10 ns** (`clk` cambia cada 5 ns).
+2. **Inicializa las señales** `clk`, `EN`, `OE`, y `D` a 0.
+3. **Aplica 5 pruebas secuenciales** para simular distintas condiciones de funcionamiento.
+4. **Genera un archivo `.vcd`** para visualizar la simulación en GTKWave.
+5. **Monitorea en consola** el comportamiento de `EN`, `OE`, `D`, y `Q` durante la simulación.
+
+---

@@ -63,3 +63,40 @@ module contador_registro_4bits (
     assign Y = (OE) ? Q : 4'bz;
 
 endmodule
+```
+
+## Testbench
+
+El archivo `testbench.v` es un banco de pruebas que simula distintas combinaciones de señales para verificar el funcionamiento completo del contador con carga, habilitación y salida triestado.
+
+### ¿Qué hace este testbench?
+
+- Inicializa señales en cero (`clk`, `EN`, `LD`, `OE`, `D`).
+- Activa `EN` y `OE` para permitir contar y observar la salida.
+- Carga valores específicos en el contador (`1010`, luego `1100`) usando `LD`.
+- Deshabilita la salida temporalmente (`OE = 0`) para comprobar el estado de alta impedancia.
+- Detiene el conteo (`EN = 0`) y verifica que el valor se mantenga.
+- Registra las señales en un archivo `.vcd` para visualización en **GTKWave**.
+
+### Comportamiento esperado
+
+| Etapa | EN | LD | OE | D     | Acción esperada                        |
+|:-----:|:--:|:--:|:--:|:-----:|:--------------------------------------:|
+| 1     | 1  | 1  | 1  | 1010  | Carga el valor `1010`                  |
+| 2     | 1  | 0  | 1  | ---   | Comienza el conteo (`1011`, `1100`,…) |
+| 3     | 1  | 0  | 0  | ---   | Salida `Y` en alta impedancia (`Z`)   |
+| 4     | 1  | 0  | 1  | ---   | `Y` vuelve a mostrar el valor contado |
+| 5     | 0  | -  | 1  | ---   | Contador se detiene, valor se mantiene |
+| 6     | 1  | 1  | 1  | 1100  | Carga nuevo valor y continúa el conteo |
+
+---
+
+## Utilidad del módulo
+
+Este tipo de módulo es útil en múltiples contextos:
+
+- **Contadores programables** para temporización, PWM o división de frecuencia.
+- **Registros configurables** que pueden iniciar desde un valor arbitrario.
+- **Sistemas con buses compartidos**, gracias a su salida en alta impedancia.
+- **Unidades de control** que requieren contar ciclos y activar otras señales de forma secuencial.
+

@@ -38,3 +38,33 @@ module mux8_2ch (
   assign O = sel ? B : A;
 
 endmodule
+```
+
+## Detalles del Testbench
+
+El archivo `testbench.v` es un banco de pruebas diseñado para simular el comportamiento del multiplexor `mux8_2ch`.
+
+### ¿Qué hace este testbench?
+
+- **Inicializa las señales** `sel`, `A` y `B`.
+- **Genera una secuencia automática**:
+  - `sel` cambia cada **5 ns** (alternancia entre A y B).
+  - `A` incrementa cada **10 ns**.
+  - `B` incrementa cada **20 ns**.
+- **Crea un archivo `.vcd`** para inspección de señales en **GTKWave**.
+- **Finaliza la simulación automáticamente** después de **80 ns**.
+
+Este patrón de estímulos permite verificar que el multiplexor responde correctamente al cambio de `sel` y que enruta la entrada adecuada hacia la salida `O`.
+
+---
+
+## Utilidad del módulo
+
+Este multiplexor es útil en:
+
+- **Selección condicional de rutas de datos**
+- **Sistemas de control donde se alterna entre dos fuentes**
+- **Diseños de microprocesadores para seleccionar operandos**
+- **Control de flujos de entrada/salida**
+
+Debido a su simplicidad y eficiencia, este módulo es ideal para integrarse en **datapaths**, **ALUs** y **controladores de buses**.

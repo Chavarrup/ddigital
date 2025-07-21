@@ -82,3 +82,5 @@ module tb_contador_registro_4bits;
     end
 
 endmodule
+
+
