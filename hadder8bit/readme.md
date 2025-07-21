@@ -38,6 +38,7 @@ module hadder8bit (
   assign {cout, O} = A + B;
 
 endmodule
+```
 ---
 
 ## Detalles del Testbench

@@ -52,7 +52,7 @@ endmodule
 
 ---
 
-##Testbench
+## Testbench
 
 El archivo `Testbench.v` es un banco de pruebas diseñado para validar el funcionamiento del módulo `registro_D_4bits_OE`. Simula distintas combinaciones de señales para verificar:
 
